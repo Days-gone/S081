@@ -70,7 +70,7 @@ void cps_prime(int read_fd)
     }
 }
 
-int main(int argc, char *argv[])
+int main(int argc, char const *argv[])
 {
     int p[2];
     pipe(p);

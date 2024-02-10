@@ -2,7 +2,7 @@
 #include "user/user.h"
 
 int
-main( int argc, char * argv[]) {
+main( int argc, char const * argv[]) {
     if (argc != 2) {
         printf("sleep should have one parameter\n");
         exit(0);

@@ -5,7 +5,7 @@ char buf[512];
 
 
 int
-main(int argc, char* argv[])
+main(int argc, char const * argv[])
 {
     int p[2];
     pipe(p);

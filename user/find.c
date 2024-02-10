@@ -7,7 +7,7 @@
 #define STDERROR 2
 #define BUFSIZE 512
 
-int post_find(char *parent, char *child)
+int post_find(char *parent, char const *child)
 {
     int par_len = strlen(parent);
     int last_slash = par_len - 1;
