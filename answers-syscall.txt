@@ -1,0 +1,30 @@
+1
+it's usertrap() function in kernel/trap.c:67
+2
+finish the line of the num = p->trapframe->a7
+using p num gdb command
+got the answer 7, which represents the macro number of the sys_exec
+3
+sstatus value is 0x22, 
+asking the gpt got the explanation that the bit0 is 1 means:
+looking into the doc of the risc-v mannual, found out that 0x22 bit-pattern
+means SIE is on, and SPIE is on, we can got the info on the page 64 of the doc:
+https://github.com/riscv/riscv-isa-manual/releases/download/Priv-v1.12/riscv-privileged-20211203.pdf.
+the context is like bellow:
+The SIE bit enables or disables all interrupts in supervisor mode. When SIE is clear, interrupts
+are not taken while in supervisor mode. When the hart is running in user-mode, the value in
+SIE is ignored, and supervisor-level interrupts are enabled. The supervisor can disable individual
+interrupt sources using the sie CSR.
+The SPIE bit indicates whether supervisor interrupts were enabled prior to trapping into supervisor
+mode. When a trap is taken into supervisor mode, SPIE is set to SIE, and SIE is set to 0. When
+an SRET instruction is executed, SIE is set to SPIE, then SPIE is set to 1.
+4
+80002052:	00002683          	lw	a3,0(zero) # 0 <_entry-0x80000000>
+means load the value at 0(zero), to the register of a3, so num is in the a3 register.
+5
+scause is 0x0d, look the table in the 71 page of the doc, the cause is:
+load page fault
+cause the physical address 0 is unused in the xv6 kernel, so it caused a load page fault error.
+you can see the hint on the figure3.3 of the riscv-xv6 book which is the reading material.
+6
+the process which caused kernel panic is initcode, and its pid is 1
