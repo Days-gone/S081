@@ -689,3 +689,15 @@ procdump(void)
     printf("\n");
   }
 }
+
+int
+count_proc(void)
+{
+  int res = 0;
+  for (int i = 0; i < nextpid; i ++)
+  {
+    if (proc[i].state != UNUSED)
+      res ++;
+  }
+  return res;
+}
