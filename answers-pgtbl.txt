@@ -1,0 +1,2 @@
+this kind of speed up, is actually putting some static infomations in the process's user space.
+so any syscall that use static infomations can be speed up like this way.
