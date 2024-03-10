@@ -449,3 +449,35 @@ copyinstr(pagetable_t pagetable, char *dst, uint64 srcva, uint64 max)
     return -1;
   }
 }
+
+// print all the pages of the pagetable_t
+void 
+vmprint(pagetable_t pagetable)
+{
+  printf("page table %p\n", pagetable);
+  for(int i = 0; i < 512; i++){
+    // l3
+    pte_t l1_pte = pagetable[i];
+    if((l1_pte & PTE_V) && (l1_pte & (PTE_R|PTE_W|PTE_X)) == 0){
+      uint64 l1_child = PTE2PA(l1_pte);
+      printf(" ..%d: pte %p pa %p\n", i, l1_pte, l1_child);
+      for (int j = 0; j < 512; j ++){
+        // l2
+        pte_t l2_pte = ((pagetable_t)l1_child)[j];
+        if((l2_pte & PTE_V) && (l2_pte & (PTE_R|PTE_W|PTE_X)) == 0){
+          uint64 l2_child = PTE2PA(l2_pte);
+          printf(" .. ..%d: pte %p pa %p\n", j, l2_pte, l2_child);
+          for(int k = 0; k < 512; k ++) {
+            // l1
+            pte_t l3_pte = ((pagetable_t)l2_child)[k];
+            if((l3_pte & PTE_V) && (l3_pte & (PTE_R|PTE_W|PTE_X)) == 0){
+              printf("l3 has a child!\n");
+            } else if (l3_pte & PTE_V){
+              printf(" .. .. ..%d: pte %p pa %p\n", k, l3_pte, PTE2PA(l3_pte));
+            }
+          }
+        }
+      }
+    }
+  }
+}
