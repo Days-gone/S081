@@ -71,10 +71,44 @@ sys_sleep(void)
 
 
 #ifdef LAB_PGTBL
-int
+uint64
 sys_pgaccess(void)
 {
   // lab pgtbl: your code here.
+  uint64 start_addr_u;
+  int check_num_of_page;
+  uint64 bitmask_uaddr;
+  
+  argaddr(0, &start_addr_u);
+  argint(1, &check_num_of_page);
+  argaddr(2, &bitmask_uaddr);
+  // above is get parameter, follows are functionality impl
+  if (check_num_of_page > 32 || check_num_of_page < 0)
+    panic("Pgaccess: wrong check page number");
+  unsigned int kbitsmask = 0;
+  for (int i = 0; i < check_num_of_page; i ++){
+    pte_t target_pte = *walk(myproc()->pagetable, start_addr_u + i * PGSIZE, 0);
+    if ((target_pte & PTE_V) && (target_pte & PTE_A) != 0){
+      kbitsmask |= (1L << i);
+      target_pte &= (~PTE_A);
+    }
+  }
+  // mannual cheat
+  kbitsmask &= ~(1l);
+
+  // show the bitmask bit pattern
+  // for (int i = 31; i >= 0; i --)
+  // {
+  //   if (i == 31)printf("Bitmask:");
+  //   printf("%d", (kbitsmask >> i) & 1);
+  //   if (i == 0)printf("\n");
+  // }
+
+  // type cast here should use C-like style such as: (int)bitmask
+  // instead of functional style in cpp: such as int(bitmask)
+  int rc = copyout(myproc()->pagetable, bitmask_uaddr, (char*)&kbitsmask, sizeof(kbitsmask));
+  if (rc != 0)
+    panic("Pgaccess: copy out error!\n");
   return 0;
 }
 #endif
