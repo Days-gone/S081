@@ -1,0 +1,55 @@
+Q1:
+get from instructions on line 24:
+  24:	4635                	li	a2,13
+as we can see that the 13 is loaded to the a2 register.
+
+Q2:
+i think that may be the instructions bellow:
+  1c:	1141                	addi	sp,sp,-16
+  1e:	e406                	sd	ra,8(sp)
+  20:	e022                	sd	s0,0(sp)
+  22:	0800                	addi	s0,sp,16
+the 1c:1141 instruction line make the stack prepration for 
+the function call for f function and function g, but we cannot
+find a jr instruction may be the compiler has done some optimize for us.
+
+Q3:
+after all the parameters has been calculated, printf function is called,
+use some instruction called jalr to the function's address:
+  34:	612080e7          	jalr	1554(ra) # 642 <printf>
+so the address of the function printf is located at the address of (ra) plus 1554
+you can search the whole asm file to find the first instruction of the printf at:
+
+void
+printf(const char *fmt, ...)
+{
+ 642:	711d                	addi	sp,sp,-96
+ 644:	ec06                	sd	ra,24(sp)
+ 646:	e822                	sd	s0,16(sp)
+ 648:	1000                	addi	s0,sp,32
+ 64a:	e40c                	sd	a1,8(s0)
+ 64c:	e810                	sd	a2,16(s0)
+ 64e:	ec14                	sd	a3,24(s0)
+ 650:	f018                	sd	a4,32(s0)
+ 652:	f41c                	sd	a5,40(s0)
+ 654:	03043823          	sd	a6,48(s0)
+ 658:	03143c23          	sd	a7,56(s0)
+}
+
+Q4:
+i guess the value could be the sp + 24 as we can see in the function above,
+or the ra value still remain the value before jump to the printf function's
+first instruction.
+
+Q5:
+the out put is he110 World, the hexcimal of the number is 0xe110,
+whose bits pattern is 1110 0001 0001 0000, and the highest bits are 
+at the lowest address, if we are using the big-endian we should put the highest bits
+at the highest address.
+
+
+Q6:
+as we have seen that the printf function pass parameters through
+register, since we have pass the first argument's value, so the value
+is dependened on what has been there in the register, in our example above,
+is the a2 register's value that determine the print result of the y= .
