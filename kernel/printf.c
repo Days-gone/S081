@@ -133,3 +133,18 @@ printfinit(void)
   initlock(&pr.lock, "pr");
   pr.locking = 1;
 }
+
+void
+backtrace(void)
+{
+  printf("backtrace:\n");
+  uint64 now_fp = r_fp();
+  uint64 page_low_borde = PGROUNDDOWN(now_fp);
+  while ( *(uint64*)(now_fp - 16) > page_low_borde )
+  {
+    // printf the return address saved on the stack
+    printf("%p\n", *(uint64*)(now_fp - 8));
+    uint64 last_fp = *((uint64*)(now_fp - 16));
+    now_fp = last_fp;
+  }
+}
