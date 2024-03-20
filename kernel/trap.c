@@ -90,11 +90,12 @@ usertrap(void)
     if (p->interval)
     {
       p->ticks_passed ++;
-      if (p->ticks_passed >= p->interval)
+      if (p->ticks_passed >= p->interval && p->is_handling == 0)
       {
         // p->pc_before_trap = p->trapframe->epc;
         trap_store();
         p->trapframe->epc = p->handler;
+        p->is_handling = 1;
         p->ticks_passed = 0;
       }
     }

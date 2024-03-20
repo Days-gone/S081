@@ -108,4 +108,5 @@ struct proc {
   uint64 handler;              // Alarm handler function pointer
   int ticks_passed;            // How many ticks passed since last handle call
   struct trapframe bftp_frame; // trapframe for resume the trap
+  int is_handling;             // Is trap handling or not
 };
