@@ -92,3 +92,29 @@ sys_uptime(void)
   release(&tickslock);
   return xticks;
 }
+
+// add sigalarm and sigreturn here
+uint64
+sys_sigalarm(void)
+{
+  int interval;
+  argint(0, &interval);
+
+  uint64 uva_handler;
+  argaddr(1, &uva_handler);
+
+  // double defensive programming
+  // check the interval here and kernel/trap.c:82
+  if (interval != 0)
+  {
+    myproc()->interval = interval;
+    myproc()->handler = uva_handler;
+  }
+  return 0;
+}
+
+uint64
+sys_sigreturn(void)
+{
+  return 0;
+}

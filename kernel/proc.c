@@ -140,6 +140,11 @@ found:
     return 0;
   }
 
+  // initialize the proc
+  p->interval = 0;
+  p->handler = 0;
+  p->ticks_passed = 0;
+
   // Set up new context to start executing at forkret,
   // which returns to user space.
   memset(&p->context, 0, sizeof(p->context));
