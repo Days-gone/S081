@@ -105,10 +105,11 @@ sys_sigalarm(void)
 
   // double defensive programming
   // check the interval here and kernel/trap.c:82
+  struct proc* p = myproc();
   if (interval != 0)
   {
-    myproc()->interval = interval;
-    myproc()->handler = uva_handler;
+    p->interval = interval;
+    p->handler = uva_handler;
   }
   return 0;
 }
@@ -116,5 +117,7 @@ sys_sigalarm(void)
 uint64
 sys_sigreturn(void)
 {
+  struct proc* p = myproc();
+  *p->trapframe = p->bftp_frame;
   return 0;
 }

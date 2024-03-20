@@ -29,6 +29,14 @@ trapinithart(void)
   w_stvec((uint64)kernelvec);
 }
 
+// save the trapframe in the proc struct to resume from trap
+void
+trap_store(void)
+{
+  struct proc* p = myproc();
+  p->bftp_frame = *(p->trapframe);
+}
+
 //
 // handle an interrupt, exception, or system call from user space.
 // called from trampoline.S
@@ -84,6 +92,8 @@ usertrap(void)
       p->ticks_passed ++;
       if (p->ticks_passed >= p->interval)
       {
+        // p->pc_before_trap = p->trapframe->epc;
+        trap_store();
         p->trapframe->epc = p->handler;
         p->ticks_passed = 0;
       }
