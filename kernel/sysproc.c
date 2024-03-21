@@ -120,5 +120,5 @@ sys_sigreturn(void)
   struct proc* p = myproc();
   *p->trapframe = p->bftp_frame;
   p->is_handling = 0;
-  return 0;
+  return p->bftp_frame.a0;
 }
