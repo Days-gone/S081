@@ -82,27 +82,26 @@ sys_pgaccess(void)
   argaddr(0, &start_addr_u);
   argint(1, &check_num_of_page);
   argaddr(2, &bitmask_uaddr);
-  // above is get parameter, follows are functionality impl
+  // above is getting parameter, follows are functionality impl
   if (check_num_of_page > 32 || check_num_of_page < 0)
     panic("Pgaccess: wrong check page number");
   unsigned int kbitsmask = 0;
+  struct proc* p = myproc();
   for (int i = 0; i < check_num_of_page; i ++){
-    pte_t target_pte = *walk(myproc()->pagetable, start_addr_u + i * PGSIZE, 0);
-    if ((target_pte & PTE_V) && (target_pte & PTE_A) != 0){
+    pte_t* target_pte = walk(p->pagetable, start_addr_u + i * PGSIZE, 0);
+    if ((*target_pte & PTE_V) && (*target_pte & PTE_A) != 0) {
       kbitsmask |= (1L << i);
-      target_pte &= (~PTE_A);
+      *target_pte &= (~PTE_A);
     }
   }
-  // mannual cheat
-  kbitsmask &= ~(1l);
 
   // show the bitmask bit pattern
-  // for (int i = 31; i >= 0; i --)
-  // {
-  //   if (i == 31)printf("Bitmask:");
-  //   printf("%d", (kbitsmask >> i) & 1);
-  //   if (i == 0)printf("\n");
-  // }
+  for (int i = 31; i >= 0; i --)
+  {
+    if (i == 31)printf("Bitmask:");
+    printf("%d", (kbitsmask >> i) & 1);
+    if (i == 0)printf("\n");
+  }
 
   // type cast here should use C-like style such as: (int)bitmask
   // instead of functional style in cpp: such as int(bitmask)
