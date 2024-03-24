@@ -376,6 +376,12 @@ copyout(pagetable_t pagetable, uint64 dstva, char *src, uint64 len)
     if(va0 >= MAXVA)
       return -1;
     pte = walk(pagetable, va0, 0);
+    if (is_cow_fault(pagetable, va0) == 0){
+      int rc = cow_alloc(pagetable, va0);
+      if (rc != 0)
+        return -1;
+    }
+    pte = walk(pagetable, va0, 0);
     if(pte == 0 || (*pte & PTE_V) == 0 || (*pte & PTE_U) == 0 ||
        (*pte & PTE_W) == 0)
       return -1;
