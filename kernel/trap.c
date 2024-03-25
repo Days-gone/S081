@@ -68,7 +68,7 @@ usertrap(void)
   } else if((which_dev = devintr()) != 0){
     // ok
   } else if (r_scause() == 15 || r_scause() == 13){
-    uint64 va = r_stval();
+    uint64 va = PGROUNDDOWN(r_stval());
     if (is_cow_fault(p->pagetable, va) == 0){
       int rc = cow_alloc(p->pagetable, va);
       if (rc != 0)
@@ -239,6 +239,8 @@ is_cow_fault(pagetable_t pgtbl, uint64 va)
 {
   if (va >= MAXVA)
     return -1;
+  // 必须要有这一行，不仅会影响正确性，还会影响性能，没有aligned可能会导致有些测试卡住
+  va = PGROUNDDOWN(va);
   pte_t* pte = walk(pgtbl, va, 0);
   if (pte == 0 || (*pte & PTE_U) == 0 || (*pte & PTE_V) == 0)
     return -1;

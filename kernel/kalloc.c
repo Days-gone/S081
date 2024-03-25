@@ -67,6 +67,7 @@ kfree(void *pa)
   acquire(&kmem.lock);
   r->next = kmem.freelist;
   kmem.freelist = r;
+  PG_ref[pa_index(pa)] --;
   release(&kmem.lock);
 }
 
